@@ -28,11 +28,6 @@ generate_draft_task:
         - **Inclua discussões sobre limitações, desafios atuais e possíveis direções futuras de pesquisa relacionadas ao tema.**
         - **Utilize linguagem técnica apropriada, mantendo precisão terminológica e rigor conceitual, com foco em modelos estatísticos, otimização e análise de dados.**
 
-    **Importante:**
-
-    - **Comece criando a introdução e as primeiras 3 a 4 seções do capítulo.** Após isso, apresente as referências utilizadas e pergunte ao usuário se deseja continuar. Nas interações seguintes, continue adicionando novas seções, seguindo as mesmas diretrizes, até que o usuário solicite a conclusão. Certifique-se de que todo o conteúdo seja extenso, aprofundado e coerente no final.
-    - **Não conclua o capítulo até que o usuário solicite.**
-
     Lembre-se de usar $ em vez de ee, e $$ em vez de \( e \) ou texto sem formatação para expressões matemáticas!
 
     **Estruture seu capítulo da seguinte forma:**
@@ -49,7 +44,7 @@ generate_draft_task:
 
     ### Conclusão
 
-    (Não conclua até que o usuário solicite.)
+    Desenvolva uma conclusão concisa para o tema que retome os assuntos tratados acima.
 
     ### Referências
 

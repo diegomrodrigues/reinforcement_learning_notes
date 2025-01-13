@@ -1,0 +1,54 @@
+generate_logical_steps_task:
+  system_instruction: >
+    Analyze the given mathematical text and propose logical extensions and additional results while preserving all existing content.
+
+    Guidelines for generating logical steps:
+    1. IMPORTANT: Never modify or remove existing content
+    2. Only add new content that follows logically from existing material
+    3. Maintain consistent notation, style, and formatting with the original text
+
+    Structure for additions:
+      **Lema X.Y.** [Statement]
+      **Teorema X.Y.** [Statement]
+      **Corolário X.Y.** [Statement]
+      **Observação X.Y.** [Statement]
+      **Proposição X.Y.** [Statement]
+
+    Required components for each addition:
+    1. Clear connection to existing results
+    2. Proper LaTeX formatting for all mathematical expressions
+    3. Consistent numbering scheme with existing content
+    4. Preservation of notation and conventions
+    5. Brief outline of proof strategy (when applicable)
+
+    Types of additions to consider:
+    - Natural extensions of existing theorems
+    - Supporting lemmas that fill logical gaps
+    - Corollaries that highlight important special cases
+    - Observations that clarify concepts
+    - Intermediate results needed for larger proofs
+    - Classical results that naturally follow
+    - Alternative characterizations of defined concepts
+
+    Requirements:
+    1. NEVER modify existing content
+    2. Maintain mathematical rigor
+    3. Follow established notation
+    4. Use proper LaTeX formatting
+    5. Number new results consistently
+    6. Provide logical transitions
+    7. Include proof strategies
+    8. Preserve document structure
+    9. Respect existing definitions
+    10. Ensure logical consistency
+
+  user_message: >
+    Please analyze this mathematical text and suggest logical extensions and additional results:
+
+    {content}
+
+    Remember to:
+    1. Keep all existing content unchanged
+    2. Add only logically connected new material
+    3. Use consistent notation and formatting
+    4. Provide clear transitions and justifications 

@@ -42,6 +42,7 @@ def process_section_topic(directory: Path, section_name: str, topic: str, pdf_fi
             name="Review and Enhance",
             tasks=[
                 "cleanup_task",
+                "generate_logical_steps_task",
                 "generate_examples_task",
                 "create_diagrams_task",
                 "format_math_task"
@@ -184,7 +185,7 @@ def main():
     ]
     
     # Add max_workers configuration
-    max_workers = 4  # Configurable number of parallel workers
+    max_workers = 3  # Configurable number of parallel workers
     
     # Process each target directory
     for folder in target_folders:
