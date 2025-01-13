@@ -11,6 +11,11 @@ import re
 
 CONTEXT = "Reinforcement Learning"
 
+EXCLUDED_FOLDERS = [
+    "01. Multi-armed Bandits"
+]
+
+
 def get_pdf_files(directory: Path) -> list[Path]:
     """Get all PDF files in the directory."""
     return list(directory.glob("*.pdf"))
@@ -169,6 +174,19 @@ def load_tasks_config(tasks_dir: str = './agent/tasks') -> dict:
     
     return tasks_config
 
+def get_numbered_folders(base_dir: Path) -> list[str]:
+    """
+    Get all numbered folders from the base directory, excluding specified folders.
+    Returns folders sorted numerically.
+    """
+    folders = [
+        folder.name for folder in base_dir.iterdir()
+        if folder.is_dir() 
+        and folder.name.strip()[0].isdigit()
+        and folder.name not in EXCLUDED_FOLDERS
+    ]
+    return sorted(folders)
+
 def main():
     # Load tasks configuration from all YAML files
     tasks_config = load_tasks_config()
@@ -186,10 +204,7 @@ def main():
     ]
     
     if not target_folders:
-        target_folders = [
-            folder.name for folder in base_dir.iterdir() if folder.is_dir()
-        ]
-        target_folders.sort()  # Sort folders numerically
+        target_folders = get_numbered_folders(base_dir)
 
     # Add max_workers configuration
     max_workers = 3  # Configurable number of parallel workers

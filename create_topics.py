@@ -4,6 +4,10 @@ from pathlib import Path
 from agent.processor import TaskProcessor
 from agent.chain import TaskChain, ChainStep
 
+EXCLUDED_FOLDERS = [
+    "01. Multi-armed Bandits"
+]
+
 def get_pdf_files(directory: Path) -> list[Path]:
     """Get all PDF files in the directory."""
     return list(directory.glob("*.pdf"))
@@ -55,6 +59,19 @@ def process_directory(directory: Path, processor: TaskProcessor, tasks_config: d
         print(f"❌ Failed to process directory: {directory}")
         print(f"Error: {str(e)}")
 
+def get_numbered_folders(base_dir: Path) -> list[str]:
+    """
+    Get all numbered folders from the base directory, excluding specified folders.
+    Returns folders sorted numerically.
+    """
+    folders = [
+        folder.name for folder in base_dir.iterdir()
+        if folder.is_dir() 
+        and folder.name.strip()[0].isdigit()
+        and folder.name not in EXCLUDED_FOLDERS
+    ]
+    return sorted(folders)
+
 def main():
     # Load tasks configuration
     tasks_config = load_tasks_config()
@@ -71,11 +88,9 @@ def main():
         #"01. Multi-armed Bandits"
     ]
     
+    # If no target folders specified, get all numbered folders
     if not target_folders:
-        target_folders = [
-            folder.name for folder in base_dir.iterdir() if folder.is_dir()
-        ]
-        target_folders.sort()  # Sort folders numerically
+        target_folders = get_numbered_folders(base_dir)
     
     # Process each target directory
     for folder in target_folders:
