@@ -68,8 +68,14 @@ def main():
     # Define base directory and target folders
     base_dir = Path("/content/reinforcement_learning_notes")
     target_folders = [
-        "01. Multi-armed Bandits"
+        #"01. Multi-armed Bandits"
     ]
+    
+    if not target_folders:
+        target_folders = [
+            folder.name for folder in base_dir.iterdir() if folder.is_dir()
+        ]
+        target_folders.sort()  # Sort folders numerically
     
     # Process each target directory
     for folder in target_folders:
