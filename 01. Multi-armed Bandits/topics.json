@@ -1,0 +1,118 @@
+{
+    "topics": [
+      {
+        "topic": "A k-armed Bandit Problem",
+        "sub_topics": [
+          "Definição do problema k-armed bandit como escolhas repetidas entre k opções com recompensas probabilísticas.",
+          "O objetivo é maximizar a recompensa total esperada ao longo do tempo.",
+          "Analogias do problema: máquinas caça-níqueis (com k alavancas) e tratamentos médicos experimentais.",
+          "O valor de uma ação, q*(a), é a recompensa esperada ao selecionar a ação 'a'.",
+          "As estimativas de valor de ação, Q_t(a), são usadas para aproximar q*(a).",
+          "Exploração vs. Explotação: a importância de equilibrar a seleção de ações gananciosas (explotação) com ações não gananciosas (exploração) para melhorar as estimativas.",
+          "O conflito entre exploração e explotação é central para o aprendizado por reforço.",
+          "A necessidade de balancear exploração e explotação surge no aprendizado por reforço e pode ser vista claramente no problema k-armed bandit."
+        ]
+      },
+      {
+        "topic": "Action-value Methods",
+        "sub_topics": [
+          "Métodos de valor de ação: estimativas dos valores das ações para tomar decisões.",
+          "Estimativa do valor de uma ação usando a média das recompensas recebidas ao selecioná-la.",
+          "A média amostral converge para o valor verdadeiro da ação (q*(a)) com o tempo.",
+          "Seleção de ação gananciosa: selecionar a ação com a maior estimativa de valor.",
+          "Métodos ε-gananciosos: selecionar a ação gananciosa com alta probabilidade, mas explorar ações aleatórias com probabilidade ε.",
+          "Vantagem dos métodos ε-gananciosos: todas as ações são amostradas infinitas vezes, garantindo a convergência dos valores de ação.",
+          "Garantias assintóticas dos métodos ε-gananciosos: a probabilidade de selecionar a ação ótima converge para perto de 1-ε."
+        ]
+      },
+      {
+        "topic": "The 10-armed Testbed",
+        "sub_topics": [
+          "Descrição do testbed de 10 braços: 2000 problemas k-armed bandit gerados aleatoriamente.",
+          "Os valores das ações, q*(a), são selecionados de uma distribuição normal com média 0 e variância 1.",
+          "As recompensas são selecionadas de uma distribuição normal com média q*(a) e variância 1.",
+          "Comparação de métodos gananciosos e ε-gananciosos no testbed.",
+          "O método ganancioso converge rapidamente para um desempenho subótimo devido à falta de exploração.",
+          "Os métodos ε-gananciosos exploram mais e alcançam um melhor desempenho a longo prazo.",
+          "O desempenho de métodos ε-gananciosos com valores maiores de ε encontram ações ótimas mais rapidamente, mas exploram mais no longo prazo.",
+          "A vantagem de métodos ε-gananciosos depende da tarefa, incluindo variação na recompensa.",
+          "O método ganancioso pode ter bom desempenho em casos determinísticos, mas a exploração é importante em casos não estacionários.",
+           "Aprendizado por reforço exige um equilíbrio entre exploração e explotação."
+        ]
+      },
+      {
+        "topic": "Incremental Implementation",
+        "sub_topics": [
+           "Implementação incremental para cálculo de médias amostrais.",
+          "Formulação de atualização incremental que usa um passo constante para cada nova recompensa.",
+          "A regra de atualização geral é: Novo_Estimativa ← Antiga_Estimativa + Tamanho_Passo [Alvo - Antiga_Estimativa].",
+          "O tamanho do passo é denotado por α ou α_t(a)."
+        ]
+      },
+      {
+        "topic": "Tracking a Nonstationary Problem",
+        "sub_topics": [
+          "Métodos de média são mais apropriados para problemas estacionários, onde as probabilidades de recompensa não mudam ao longo do tempo.",
+           "Em problemas não estacionários, é importante ponderar mais as recompensas recentes.",
+          "Uso de um tamanho de passo constante na atualização incremental para ponderar recompensas recentes.",
+          "A média ponderada resultante é chamada de média de recência ponderada exponencial.",
+          "O peso de uma recompensa anterior diminui exponencialmente com o número de recompensas posteriores.",
+          "Condições para convergência dos tamanhos de passo (α_n(a)) com probabilidade 1: ∑α_n(a)=∞ e ∑α_n²(a)<∞.",
+           "As condições de convergência são atendidas para a média amostral, mas não para o tamanho de passo constante.",
+          "Embora as condições de convergência sejam usadas em trabalhos teóricos, elas são pouco utilizadas em aplicações e pesquisas empíricas."
+        ]
+      },
+      {
+        "topic": "Optimistic Initial Values",
+        "sub_topics": [
+          "O valor inicial da estimativa do valor da ação influencia o aprendizado.",
+          "Os métodos de média amostral são inicialmente tendenciosos, mas esse viés desaparece quando todas as ações são selecionadas pelo menos uma vez.",
+          "Métodos com α constante mantém o viés, mas ele diminui com o tempo.",
+          "Valores iniciais de ações podem ser usados como uma forma de encorajar a exploração.",
+          "Configuração de valores iniciais de ações para um valor alto (otimista) incentiva a exploração.",
+          "Otimismo inicial é uma técnica simples que funciona bem em problemas estacionários, mas não em problemas não estacionários.",
+           "Qualquer método que foque nas condições iniciais não é adequado para problemas não estacionários."
+        ]
+      },
+      {
+        "topic": "Upper-Confidence-Bound Action Selection",
+        "sub_topics": [
+          "Exploração é necessária devido à incerteza nas estimativas de valores de ações.",
+          "Métodos ε-gananciosos exploram ações indiscriminadamente.",
+          "É melhor selecionar ações não-gananciosas com base no potencial de otimalidade, considerando estimativas e incertezas.",
+          "Seleção de ação UCB (upper confidence bound) seleciona ações com base em um limite superior de sua possível recompensa verdadeira.",
+          "O termo da raiz quadrada na seleção de ação UCB é uma medida da incerteza na estimativa do valor de uma ação.",
+          "A incerteza diminui quando uma ação é selecionada, mas aumenta quando outras ações são selecionadas.",
+          "UCB tem bom desempenho mas é mais difícil de estender para problemas gerais de aprendizado por reforço.",
+           "UCB enfrenta dificuldades em lidar com problemas não estacionários e grandes espaços de estados."
+        ]
+      },
+      {
+        "topic": "Gradient Bandit Algorithms",
+        "sub_topics": [
+          "Métodos que aprendem uma preferência numérica para cada ação em vez de estimar valores de ação.",
+          "As preferências de ação (H_t(a)) não têm interpretação em termos de recompensa, apenas preferências relativas.",
+          "As probabilidades de ação são determinadas por uma distribuição soft-max (Gibbs ou Boltzmann).",
+          "Algoritmo de aprendizado baseado em ascensão de gradiente estocástico para preferências soft-max.",
+          "As preferências de ação são atualizadas com base na recompensa e um termo de linha de base.",
+          "O termo de linha de base (R_t) é a média das recompensas recebidas até o momento.",
+          "Se a recompensa for maior que a linha de base, a probabilidade da ação é aumentada e vice-versa.",
+          "O algoritmo gradiente funciona para uma variante do testbed de 10 braços em que as recompensas esperadas são selecionadas de uma distribuição normal com média +4.",
+           "O algoritmo gradiente se adapta instantaneamente ao novo nível devido ao termo de linha de base de recompensa.",
+          "Omitir a linha de base degradaria significativamente o desempenho."
+        ]
+      },
+       {
+        "topic": "Associative Search (Contextual Bandits)",
+         "sub_topics": [
+             "Extensão para tarefas associativas: onde ações são associadas a situações diferentes.",
+             "O objetivo é aprender uma política: um mapeamento de situações para ações.",
+             "Exemplo de tarefa associativa: várias tarefas k-armed bandit, cada uma com um identificador único.",
+             "A política associa o identificador da tarefa à melhor ação.",
+             "Tarefas de busca associativa são um passo intermediário entre o problema k-armed bandit e o aprendizado por reforço completo.",
+             "Tarefas de busca associativa são chamadas de contextual bandits na literatura.",
+             "A diferença para aprendizado por reforço completo é que as ações não afetam a situação seguinte, apenas a recompensa imediata."
+         ]
+      }
+    ]
+  }

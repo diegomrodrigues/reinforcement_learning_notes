@@ -6,7 +6,7 @@ from agent.chain import TaskChain, ChainStep
 
 def get_pdf_files(directory: Path) -> list[Path]:
     """Get all PDF files in the directory."""
-    return list(directory.glob("*.md"))
+    return list(directory.glob("*.pdf"))
 
 def load_tasks_config(tasks_dir: str = './agent/tasks') -> dict:
     """Load all YAML files from the tasks directory into a single config dictionary."""
