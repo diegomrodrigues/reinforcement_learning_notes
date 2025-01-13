@@ -66,7 +66,14 @@ class TaskChain:
         # Upload input files if provided
         uploaded_files = None
         if step.input_files:
-            uploaded_files = self.processor.upload_file_setup(step.input_files)
+            uploaded_files = []
+            for file_path in step.input_files:
+                mime_type = "application/pdf" if file_path.suffix.lower() == ".pdf" else None
+                uploaded_file = self.processor.upload_file(str(file_path), mime_type=mime_type)
+                uploaded_files.append(uploaded_file)
+            
+            # Wait for files to be processed
+            self.processor.wait_for_files_active(uploaded_files)
         
         current_content = content
         iterations = 0
