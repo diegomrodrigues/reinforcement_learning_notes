@@ -41,7 +41,9 @@ def process_section_topic(directory: Path, section_name: str, topic: str, pdf_fi
         ChainStep(
             name="Generate Initial Draft",
             tasks=["generate_draft_task"],
-            input_files=pdf_files
+            input_files=pdf_files,
+            stop_at="### Conclusão",
+            max_iterations=2
         ),
         ChainStep(
             name="Review and Enhance",
@@ -52,7 +54,9 @@ def process_section_topic(directory: Path, section_name: str, topic: str, pdf_fi
                 "create_diagrams_task",
                 "format_math_task",
                 "cleanup_task"
-            ]
+            ],
+            stop_at="### Conclusão",
+            max_iterations=2
         )
     ]
     
