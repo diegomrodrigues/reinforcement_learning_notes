@@ -12,6 +12,8 @@ class ChainStep:
     expect_json: bool = False  # Add flag for JSON output
     store_result: bool = False  # New flag to store result for next step
     use_previous_result: bool = False  # New flag to use previous step's result
+    stop_at: Optional[str] = None  # New: String pattern to stop generation
+    max_iterations: int = 5  # New: Maximum number of continuation attempts
     
     def __post_init__(self):
         """Validate the step configuration after initialization."""
@@ -64,39 +66,55 @@ class TaskChain:
         # Upload input files if provided
         uploaded_files = None
         if step.input_files:
-            uploaded_files = []
-            for file_path in step.input_files:
-                mime_type = "application/pdf" if file_path.suffix.lower() == ".pdf" else None
-                uploaded_file = self.processor.upload_file(str(file_path), mime_type=mime_type)
-                uploaded_files.append(uploaded_file)
-            
-            # Wait for files to be processed
-            self.processor.wait_for_files_active(uploaded_files)
+            uploaded_files = self.processor.upload_file_setup(step.input_files)
         
         current_content = content
-        for task_name in step.tasks:
-            print(f"\n→ Executing task: {task_name}")
-            task_config = self.tasks_config[task_name]
-            
-            # Add JSON response type if step expects JSON
-            if step.expect_json:
-                task_config = {**task_config, "response_mime_type": "application/json"}
-            
-            try:
-                result = self.processor.process_task(
-                    task_name, 
-                    task_config, 
-                    current_content,
-                    files=uploaded_files
-                )
-                if result:
-                    current_content = result
-                else:
-                    print(f"❌ Step failed at task: {task_name}")
+        iterations = 0
+        
+        while iterations < step.max_iterations:
+            for task_name in step.tasks:
+                print(f"\n→ Executing task ({iterations + 1}/{step.max_iterations}): {task_name}")
+                task_config = self.tasks_config[task_name].copy()
+                
+                # Add JSON response type if step expects JSON
+                if step.expect_json:
+                    task_config["response_mime_type"] = "application/json"
+                
+                # If not first iteration, modify user message to continue
+                if iterations > 0:
+                    task_config["user_message"] = "Continue exactly from where you stopped precisely"
+                
+                try:
+                    result = self.processor.process_task(
+                        task_name, 
+                        task_config, 
+                        current_content,
+                        files=uploaded_files
+                    )
+                    if result:
+                        if iterations > 0:
+                            # Append new content for continuations
+                            current_content += result
+                        else:
+                            current_content = result
+                    else:
+                        print(f"❌ Step failed at task: {task_name}")
+                        return None
+                except Exception as e:
+                    print(f"❌ Error in task {task_name}: {str(e)}")
                     return None
-            except Exception as e:
-                print(f"❌ Error in task {task_name}: {str(e)}")
-                return None
+            
+            # Check if we should stop based on the stop pattern
+            if step.stop_at and step.stop_at in current_content:
+                break
+                
+            # Only continue if we have a stop pattern and haven't reached it
+            if not step.stop_at:
+                break
+                
+            iterations += 1
+            if iterations == step.max_iterations:
+                print(f"⚠️ Reached maximum iterations ({step.max_iterations}) without finding stop pattern")
         
         # Store result if specified
         if step.store_result:
