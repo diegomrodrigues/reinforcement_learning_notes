@@ -1,3 +1,6 @@
+from functools import wraps
+import time
+import traceback
 import yaml
 import os
 from pathlib import Path
@@ -12,8 +15,26 @@ import re
 CONTEXT = "Reinforcement Learning"
 
 EXCLUDED_FOLDERS = [
-    "01. Multi-armed Bandits"
+    #"01. Multi-armed Bandits"
 ]
+
+def retry_on_error(max_retries=3):
+    """Decorator to retry operations on failure."""
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            for attempt in range(max_retries):
+                try:
+                    return func(*args, **kwargs)
+                except Exception as e:
+                    if attempt == max_retries - 1:
+                        print(f"❌ Failed after {max_retries} attempts: {func.__name__}")
+                        raise Exception(f"Error: {str(e)} Trace: {traceback.format_exc()}")
+                    print(f"⚠️ Attempt {attempt + 1}/{max_retries} failed, retrying...")
+                    time.sleep(2 ** attempt)
+            return None
+        return wrapper
+    return decorator
 
 
 def get_pdf_files(directory: Path) -> list[Path]:
@@ -50,6 +71,7 @@ def process_section_topic(directory: Path, section_name: str, topic: str, pdf_fi
             tasks=[
                 "cleanup_task",
                 "generate_logical_steps_task",
+                "generate_logical_steps_task",
                 "generate_examples_task",
                 "create_diagrams_task",
                 "format_math_task",
@@ -80,6 +102,7 @@ def process_section_topic(directory: Path, section_name: str, topic: str, pdf_fi
     
     return None
 
+@retry_on_error(max_retries=3)
 def process_topic(directory: Path, section_name: str, topic: str, content: str, 
                  processor: TaskProcessor, tasks_config: dict) -> bool:
     """Process a single topic and save it to a file."""
@@ -106,6 +129,7 @@ def process_topic(directory: Path, section_name: str, topic: str, content: str,
         print(f"❌ Failed to process topic: {str(e)}")
         return False
 
+@retry_on_error(max_retries=5)
 def process_directory(directory: Path, processor: TaskProcessor, tasks_config: dict, max_workers: int = 3) -> None:
     """Process a single directory with its topics using parallel processing."""
     print(f"\nProcessing directory: {directory}")

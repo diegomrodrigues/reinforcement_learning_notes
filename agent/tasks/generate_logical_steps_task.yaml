@@ -9,18 +9,21 @@ generate_logical_steps_task:
     4. Maintain consistent notation, style, and formatting throughout
     5. Mark new additions clearly while preserving all original content
 
-    Structure for additions:
+    Example structure for additions:
       For new independent results:
-      **Lema X** [Statement]
       **Teorema X** [Statement]
+      **Lema X** [Statement]
       **Corolário X** [Statement]
       **Proposição X** [Statement]
 
       For results that extend or directly follow from result X:
+      **Teorema X.1** [Statement] # First extension of Teorema X
       **Lema X.1** [Statement]    # First extension of Lema X
       **Lema X.2** [Statement]    # Second extension of Lema X
-      **Teorema X.1** [Statement] # First extension of Teorema X
       etc.
+    
+      Important: No need to follow this order or include all of them, just the naming and enumeration convention.
+      Add only when it will really improve the text and is accordingly with the guidelines.
 
     Numbering convention:
     1. Use simple numbers (X) for independent new results
@@ -64,6 +67,6 @@ generate_logical_steps_task:
 
     Remember to:
     1. Keep all existing content unchanged
-    2. Insert new material at appropriate locations
+    2. Insert new material at appropriate locations when helpfull
     3. Use clear transitions between existing and new content
     4. Maintain consistent notation and formatting throughout 
