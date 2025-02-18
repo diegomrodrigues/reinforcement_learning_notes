@@ -53,18 +53,20 @@ class ProcessImagesWorkflow(
             return
 
         image_entries = []
+        # Keep track of the image index
+        idx = 1
         for image_file in images_dir.iterdir():
             if image_file.is_file() and image_file.suffix.lower() in [".png", ".jpg", ".jpeg"]:
-                result = self._process_single_image(ctx, image_file, pdf_file)
+                result = self._process_single_image(ctx, image_file, pdf_file, idx)
                 if result:
                     image_entries.append(result)
+                    idx += 1
 
         if image_entries:
             self._generate_json_summary(directory, image_entries)
             self._generate_markdown_summary(directory, image_entries)
 
-
-    def _process_single_image(self, ctx: Context, image_file: Path, pdf_file: Path) -> Optional[Dict]:
+    def _process_single_image(self, ctx: Context, image_file: Path, pdf_file: Path, idx: int) -> Optional[Dict]:
         """Process a single image with its associated PDF."""
         print(f"Processing image: {image_file.name}")
 
@@ -80,15 +82,11 @@ class ProcessImagesWorkflow(
                 print(f"  - Image processing returned no result: {image_file.name}")
                 return None
 
-            # Rename the image file based on the 'legenda' field, if present.
-            if 'legenda' in result:
-                figure_name = result['legenda'].replace(" ", "_").replace("/", "_")
-                new_file_name = f"{figure_name}{image_file.suffix}"
-                new_file_path = image_file.parent / new_file_name
-                image_file.rename(new_file_path)
-                result['filename'] = new_file_name # Add filename to the result
-            else:
-                result['filename'] = image_file.name # Add filename to the result
+            # Create new filename with index
+            new_file_name = f"image{idx}{image_file.suffix}"
+            new_file_path = image_file.parent / new_file_name
+            image_file.rename(new_file_path)
+            result['filename'] = new_file_name  # Add filename to the result
 
             return result
 
