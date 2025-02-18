@@ -90,10 +90,8 @@ class DirectoryProcessorAgent(Agent):
 
         # Get existing section numbers and create numbered directory
         existing_sections = self._get_existing_numbers(directory, is_directory=True)
-        section_num = 1
-        while section_num in existing_sections:
-            section_num += 1
-            
+        section_num = max(existing_sections) + 1
+
         section_dir = directory / f"{section_num:02d}. {section_name}"
         section_dir.mkdir(parents=True, exist_ok=True)
 
@@ -128,47 +126,62 @@ class DirectoryProcessorAgent(Agent):
         base_dir: Path,
         section_dir: Path,
         section_name: str,
-        topic_name: str,  # Now comes pre-formatted with number
+        topic_name: str,
         previous_topics: List[Dict[str, Any]],
         max_previous_topics: int,
+        max_retries: int = 3,
     ):
         """Generates and enhances a draft for a single topic."""
         if self.debug:
             print(f"Processing topic: {topic_name}")
 
-        # Generate Initial Draft
-        draft_workflow = self.get_workflow("generate_initial_draft", ctx, args)
-        draft_args = {
-            "directory": str(section_dir),
-            "section_name": section_name,
-            "topic": topic_name,
-            "context": self.build_context_string(previous_topics),  # Pass context string
-        }
-        initial_draft = draft_workflow.run(ctx, draft_args)
-        ctx["current_topic_content"] = initial_draft # Store for use by previous_topics
+        attempt = 0
+        last_error = None
 
-        # Enhance Draft
-        enhance_workflow = self.get_workflow("enhance_draft", ctx, args)
-        enhance_args = {
-            "content": initial_draft,
-            "base_directory": str(base_dir), 
-            "directory": str(section_dir)
-        }
-        enhanced_draft = enhance_workflow.run(ctx, enhance_args)
+        while attempt < max_retries:
+            try:
+                # Generate Initial Draft
+                draft_workflow = self.get_workflow("generate_initial_draft", ctx, args)
+                draft_args = {
+                    "directory": str(section_dir),
+                    "section_name": section_name,
+                    "topic": topic_name,
+                    "context": self.build_context_string(previous_topics),
+                }
+                initial_draft = draft_workflow.run(ctx, draft_args)
+                ctx["current_topic_content"] = initial_draft
 
-        # Generate Filename and Save
-        filename_workflow = self.get_workflow("generate_filename", ctx, args)
-        filename_args = {
-            "topic": topic_name.split('. ')[1],  # Remove numbering from filename task
-            "content": topic_name.split('. ')[1],
-            "directory": str(section_dir)
-        }
-        filename, filepath = filename_workflow.run(ctx, filename_args)
+                # Enhance Draft
+                enhance_workflow = self.get_workflow("enhance_draft", ctx, args)
+                enhance_args = {
+                    "content": initial_draft,
+                    "base_directory": str(base_dir), 
+                    "directory": str(section_dir)
+                }
+                enhanced_draft = enhance_workflow.run(ctx, enhance_args)
 
-        filepath.write_text(enhanced_draft, encoding="utf-8")
-        print(f"✔️ Saved topic to: {filepath}")
+                # Generate Filename and Save
+                filename_workflow = self.get_workflow("generate_filename", ctx, args)
+                filename_args = {
+                    "topic": topic_name.split('. ')[1],
+                    "content": topic_name.split('. ')[1],
+                    "directory": str(section_dir)
+                }
+                filename, filepath = filename_workflow.run(ctx, filename_args)
 
-        return enhanced_draft
+                filepath.write_text(enhanced_draft, encoding="utf-8")
+                print(f"✔️ Saved topic to: {filepath}")
+
+                return enhanced_draft
+
+            except Exception as e:
+                attempt += 1
+                last_error = e
+                if attempt < max_retries:
+                    print(f"⚠️ Attempt {attempt} failed for topic '{topic_name}'. Retrying... Error: {str(e)}")
+                else:
+                    print(f"❌ All {max_retries} attempts failed for topic '{topic_name}'")
+                    raise last_error
 
     def build_context_string(self, previous_topics: List[Dict[str, Any]]) -> str:
         """Builds a context string from previous topics."""

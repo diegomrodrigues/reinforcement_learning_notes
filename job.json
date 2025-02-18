@@ -8,5 +8,5 @@
         "Foque nos conceitos fundamentais e algoritmos de RL, incluindo value functions, policy evaluation, temporal difference learning, Monte Carlo methods e suas propriedades de convergência.",
         "Foque nos aspectos práticos e de implementação, incluindo design de algoritmos, estruturas de dados eficientes, técnicas de aproximação de função, e considerações computacionais para problemas de larga escala em RL."
     ],
-    "directory": "01. Multi-armed Bandits"
+    "directory": "02. Finite Markov Decision Processes"
 }

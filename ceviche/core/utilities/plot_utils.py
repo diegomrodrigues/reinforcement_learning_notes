@@ -11,7 +11,6 @@ import time
 
 from ceviche.core.context import Context
 from ceviche.core.models.gemini import GeminiModel
-from ceviche.core.utilities.model_utils import ModelUtilsMixin
 
 
 class PlotGenerationMixin:
@@ -41,37 +40,53 @@ class PlotGenerationMixin:
 
     def _find_plot_code_blocks(self, content: str) -> List[tuple[str, str]]:
         """Identify Python code blocks containing plotting code."""
-        code_patterns = [
-            r'(^|\n)>?\s*```python\s*?\n(.*?)\n>?\s*```',  # Handles quoted and regular blocks
-            r'(^|\n)>?\s*```py\s*?\n(.*?)\n>?\s*```'       # Handles quoted and regular blocks
-        ]
-        
-        plotting_keywords = ['plt.', 'matplotlib', 'seaborn', 'sns.']
+        lines = content.split('\n')
         code_blocks = []
+        current_block = []
+        original_block = []
+        in_code_block = False
         
-        for pattern in code_patterns:
-            for match in re.finditer(pattern, content, re.DOTALL | re.MULTILINE):
-                # Extract code and clean leading > markers
-                raw_code = match.group(2).strip()
-                cleaned_code = '\n'.join(
-                    [line.lstrip('>').strip() for line in raw_code.split('\n')]
-                )
-                if any(keyword in cleaned_code for keyword in plotting_keywords):
-                    code_blocks.append((match.group(0), cleaned_code))
+        for line in lines:
+            stripped = line.strip()
+            
+            # Start of Python code block
+            if '```py' in stripped:
+                in_code_block = True
+                original_block = [line]
+                continue
+                
+            # End of code block
+            if in_code_block and stripped.startswith('```'):
+                in_code_block = False
+                code = '\n'.join(current_block)
+                original = '\n'.join(original_block + [line])
+                
+                # Only add if it contains plotting-related code
+                if any(kw in code for kw in ['plt', 'matplotlib', 'seaborn', 'sns']):
+                    code_blocks.append((original, code))
+                    
+                current_block = []
+                original_block = []
+                continue
+                
+            # Collect lines while in code block
+            if in_code_block:
+                current_block.append(line)
+                original_block.append(line)
         
         print(f"  - Found {len(code_blocks)} potential plotting code blocks")
-            
         return code_blocks
 
     def _process_code_blocks(self, ctx: Context, content: str, code_blocks: List[tuple[str, str]], images_dir: Path) -> str:
         """Process all identified code blocks to generate plots."""
         updated_content = content
         
-        # Initialize model for code correction
-        model = ModelUtilsMixin().init_model(ctx, {
-            "model_name": "gemini-2.0-flash-exp",
-            "system_instruction": "Please correct the indentation and syntax of this Python code to make it runnable."
-        })
+        model = GeminiModel(
+            api_key=ctx.get("api_key"),  # Get API key from config
+            model_name="gemini-2.0-flash-exp",
+            system_instruction="Please correct the indentation and syntax of this Python code to make it runnable.",
+            mock=ctx.get("mock_api", False)  # Pass mock flag
+        )
         
         for i, (original_block, code) in enumerate(code_blocks, start=1):
             try:

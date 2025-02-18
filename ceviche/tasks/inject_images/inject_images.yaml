@@ -28,6 +28,7 @@ inject_images:
        - DO NOT invent or modify image filenames
        - DO NOT modify image paths except for changing ./images to ./../images
        - If unsure about an image reference, DO NOT include it
+       - DO NOT include images in the conclusion or reference sections
     
     5. Validation Steps:
        - Before inserting an image, verify it exists in the catalog
@@ -88,4 +89,5 @@ inject_images:
     - Place images near their contextual references
     - Preserve all original content
     - Never modify image extensions or filenames
+    - Never include images in the conclusion or reference sections
     - Add <!-- END --> at the end

@@ -1,0 +1,14 @@
+{
+  "topics": [
+    {
+      "topic": "Summary of Exploration-Exploitation Methods",
+      "sub_topics": [
+        "Several methods for balancing exploration and exploitation have been presented, including \u03b5-greedy methods, UCB, and gradient bandit algorithms.",
+        "\u03b5-greedy methods explore randomly a small fraction of the time, UCB explores deterministically, favoring less-sampled actions, and gradient bandit algorithms estimate action preferences and favor preferred actions probabilistically via softmax.",
+        "Optimistically initializing estimates encourages exploration.",
+        "Comparing algorithms involves considering their performance as a function of their parameters through a parameter study.  Each algorithm typically exhibits better performance at an intermediate parameter value. We evaluate a method not just by its best parameter setting but also by its sensitivity to parameter values, where reasonably insensitive methods are good over a wide range of parameters.",
+        "Despite their simplicity, the methods presented are considered state-of-the-art. More sophisticated methods exist, but their complexity and assumptions often make them impractical for the full reinforcement learning problem. A fully satisfactory solution for balancing exploration and exploitation remains an open challenge."
+      ]
+    }
+  ]
+}
