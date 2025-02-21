@@ -2,11 +2,11 @@
     "max_workers": 2,
     "max_previous_topics": 5,
     "context": "Advanced Study of Reinforcement Learning Fundamentals",
-    "json_per_perspective": 3,
+    "json_per_perspective": 2,
     "perspectives": [
         "Foque nos fundamentos teóricos e matemáticos do Reinforcement Learning, incluindo teoria da probabilidade, processos de Markov, otimização e provas matemáticas relevantes para RL.",
         "Foque nos conceitos fundamentais e algoritmos de RL, incluindo value functions, policy evaluation, temporal difference learning, Monte Carlo methods e suas propriedades de convergência.",
         "Foque nos aspectos práticos e de implementação, incluindo design de algoritmos, estruturas de dados eficientes, técnicas de aproximação de função, e considerações computacionais para problemas de larga escala em RL."
     ],
-    "directory": "02. Finite Markov Decision Processes"
+    "directory": "04. Monte Carlo Methods"
 }

@@ -90,7 +90,10 @@ class DirectoryProcessorAgent(Agent):
 
         # Get existing section numbers and create numbered directory
         existing_sections = self._get_existing_numbers(directory, is_directory=True)
-        section_num = max(existing_sections) + 1
+        if existing_sections:
+            section_num = max(existing_sections) + 1
+        else:
+            section_num = 1
 
         section_dir = directory / f"{section_num:02d}. {section_name}"
         section_dir.mkdir(parents=True, exist_ok=True)
